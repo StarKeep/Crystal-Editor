@@ -1,38 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-
-using System.IO;
-using System.Diagnostics;
-using Microsoft.Win32;
-using Microsoft.WindowsAPICodePack.Dialogs;
-
-namespace Crystal_Editor
+﻿namespace Crystal_Editor
 {
-
-    
-
     public partial class EnemyTemplateForm : Form
     {
-        private CoreCommonEvent events = new CoreCommonEvent(start: 37,row: 38);
+        private CoreCommonEvent events;
         //int RevNum = 0; //Used in Array Reverse to simplify looking at it and reduce input mistakes.
 
-
-
-        
         public EnemyTemplateForm()
         {
             InitializeComponent();
-            string FileLocation = Properties.Settings.Default.SpotTemplateFolder + "\\Template Editor\\EnemyTemplate"; //Sets a string called File Location to the location of where the game file were gonna mod / edit is.  Used to be Data_Location
-            int Data_Length = (int)(new FileInfo(FileLocation).Length);   //Sets the entire file as the leagth of the array.   Used to be EnemyData_Leagth
-            events.data_array = File.ReadAllBytes(FileLocation);  //loads an array with whatever is in the path
-            
+            events = new CoreCommonEvent(fileLocation: Properties.Settings.Default.SpotTemplateFolder + "\\Template Editor\\EnemyTemplate", start: 37, row: 38);
 
             Tree.Nodes.Add("Goblin");
             Tree.Nodes.Add("Slime");
@@ -57,42 +33,35 @@ namespace Crystal_Editor
 
         private void Tree_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            events.SaveLoad = "Load";
-            Editor();
+            Editor(CoreCommonEvent.MoveRequest.Load);
         }
         private void Button6_Click(object sender, EventArgs e) //Load Button
         {
-            events.SaveLoad = "Load";
-            Editor();
+            Editor(CoreCommonEvent.MoveRequest.Load);
         }
         private void Button5_Click(object sender, EventArgs e) //Save Button
         {
-            events.SaveLoad = "Save";
-            Editor();
+            Editor(CoreCommonEvent.MoveRequest.Save);
         }
-               
 
 
-        public void Editor()
+
+        public void Editor(CoreCommonEvent.MoveRequest requestType)
         {
             //Numbers start from Left and read to right Right (normal?) Endianese.
             //Final number is the column the data is from / how many bytes into a row the data is from. The first byte is byte 1 not byte 0.
 
-            events.TextName = "richTextBoxID"; events.Column = 1; events.MoveData(Tree, Controls); //1 Byte
-            events.TextName = "richTextBoxStr"; events.Column = 17; events.MoveData(Tree, Controls); //4 Byte
-            events.TextName = "richTextBoxMag"; events.Column = 21; events.MoveData(Tree, Controls); //4 Byte
-            events.TextName = "richTextBoxDef"; events.Column = 25; events.MoveData(Tree, Controls); //2 Byte
-            events.TextName = "richTextBoxRes"; events.Column = 27; events.MoveData(Tree, Controls); //2 Byte
-            events.TextName = "richTextBoxTP"; events.Column = 15; events.MoveData(Tree, Controls); //1 Byte
+            events.MoveData(Tree, Controls, textName: "richTextBoxID", column: 1, requestType); //1 Byte
+            events.MoveData(Tree, Controls, textName: "richTextBoxStr", column: 17, requestType); //4 Byte
+            events.MoveData(Tree, Controls, textName: "richTextBoxMag", column: 21, requestType); //4 Byte
+            events.MoveData(Tree, Controls, textName: "richTextBoxDef", column: 25, requestType); //2 Byte
+            events.MoveData(Tree, Controls, textName: "richTextBoxRes", column: 27, requestType); //2 Byte
+            events.MoveData(Tree, Controls, textName: "richTextBoxTP", column: 15, requestType); //1 Byte
 
-            events.TextName = "richTextBoxRev4"; events.Column = 2; events.MoveDataReverse4(Tree, Controls); //4R Byte
-            events.TextName = "richTextBoxRev2"; events.Column = 10; events.MoveDataReverse2(Tree, Controls); //2R Byte
+            events.MoveDataReverse(Tree, Controls, textName: "richTextBoxRev4", column: 2, requestType, length: 4); //4R Byte
+            events.MoveDataReverse(Tree, Controls, textName: "richTextBoxRev2", column: 10, requestType, length: 2); //2R Byte
 
         }
-
-
-        
-
 
         /*
 
@@ -119,14 +88,10 @@ namespace Crystal_Editor
 
         */
 
-
         private void Tree_BeforeSelect(object sender, TreeViewCancelEventArgs e)
         {
 
         }
-
-        
-        
 
         private void EnemyTemplateForm_Load(object sender, EventArgs e)
         {
