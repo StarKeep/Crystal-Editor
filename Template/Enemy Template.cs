@@ -1,4 +1,6 @@
-﻿namespace Crystal_Editor
+﻿using static Crystal_Editor.CoreCommonEvent;
+
+namespace Crystal_Editor
 {
     public partial class EnemyTemplateForm : Form
     {
@@ -8,7 +10,7 @@
         public EnemyTemplateForm()
         {
             InitializeComponent();
-            events = new CoreCommonEvent(fileLocation: Properties.Settings.Default.SpotTemplateFolder + "\\Template Editor\\EnemyTemplate", start: 37, row: 38);
+            events = new CoreCommonEvent(fileLocation: Properties.Settings.Default.SpotTemplateFolder + "\\Template Editor\\EnemyTemplate", start: 37, row: 38, tree: Tree, controls: Controls);
 
             Tree.Nodes.Add("Goblin");
             Tree.Nodes.Add("Slime");
@@ -33,34 +35,31 @@
 
         private void Tree_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            Editor(CoreCommonEvent.MoveRequest.Load);
+            Editor(MoveRequest.Load);
         }
         private void Button6_Click(object sender, EventArgs e) //Load Button
         {
-            Editor(CoreCommonEvent.MoveRequest.Load);
+            Editor(MoveRequest.Load);
         }
         private void Button5_Click(object sender, EventArgs e) //Save Button
         {
-            Editor(CoreCommonEvent.MoveRequest.Save);
+            Editor(MoveRequest.Save);
         }
 
-
-
-        public void Editor(CoreCommonEvent.MoveRequest requestType)
+        public void Editor(MoveRequest requestType)
         {
             //Numbers start from Left and read to right Right (normal?) Endianese.
             //Final number is the column the data is from / how many bytes into a row the data is from. The first byte is byte 1 not byte 0.
 
-            events.MoveData(Tree, Controls, textName: "richTextBoxID", column: 1, requestType); //1 Byte
-            events.MoveData(Tree, Controls, textName: "richTextBoxStr", column: 17, requestType); //4 Byte
-            events.MoveData(Tree, Controls, textName: "richTextBoxMag", column: 21, requestType); //4 Byte
-            events.MoveData(Tree, Controls, textName: "richTextBoxDef", column: 25, requestType); //2 Byte
-            events.MoveData(Tree, Controls, textName: "richTextBoxRes", column: 27, requestType); //2 Byte
-            events.MoveData(Tree, Controls, textName: "richTextBoxTP", column: 15, requestType); //1 Byte
+            events.MoveData(textName: "richTextBoxID", column: 1, requestType); //1 Byte
+            events.MoveData(textName: "richTextBoxStr", column: 17, requestType); //4 Byte
+            events.MoveData(textName: "richTextBoxMag", column: 21, requestType); //4 Byte
+            events.MoveData(textName: "richTextBoxDef", column: 25, requestType); //2 Byte
+            events.MoveData(textName: "richTextBoxRes", column: 27, requestType); //2 Byte
+            events.MoveData(textName: "richTextBoxTP", column: 15, requestType); //1 Byte
 
-            events.MoveDataReverse(Tree, Controls, textName: "richTextBoxRev4", column: 2, requestType, length: 4); //4R Byte
-            events.MoveDataReverse(Tree, Controls, textName: "richTextBoxRev2", column: 10, requestType, length: 2); //2R Byte
-
+            events.MoveDataReverse(textName: "richTextBoxRev4", column: 2, requestType, length: 4); //4R Byte
+            events.MoveDataReverse(textName: "richTextBoxRev2", column: 10, requestType, length: 2); //2R Byte
         }
 
         /*
