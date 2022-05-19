@@ -13,14 +13,16 @@
         private int Row = 0; //Leagth of a row of data. The first byte is #1 not #0, so if a row starts at column 0 and is 29 long, then input 30.  This is used in every load and save of data to the array.
         private TreeView Tree;
         private Control.ControlCollection Controls;
+        //private ComboBox ComboA;
 
-        public CoreCommonEvent(string fileLocation, int start, int row, TreeView tree, Control.ControlCollection controls)
+        public CoreCommonEvent(string fileLocation, int start, int row, TreeView tree, Control.ControlCollection controls)//ComboBox comboA
         {
             data_array = File.ReadAllBytes(fileLocation);
             Start = start;
             Row = row;
             Tree = tree;
             Controls = controls;
+            //ComboA = comboA;
         }
 
         public void MoveData(string textName, int column, MoveRequest requestType)

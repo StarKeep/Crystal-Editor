@@ -5,13 +5,17 @@ namespace Crystal_Editor
     public partial class EnemyTemplateForm : Form
     {
         private CoreCommonEvent events;
-        //int RevNum = 0; //Used in Array Reverse to simplify looking at it and reduce input mistakes.
+        List<ComboBox> Arteboxes = new List<ComboBox>();  //Puts the combo boxes in an array called boxes so i can refernce this array later (to make the code pretty and save time)
+        string UnitClass;
+
+
 
         public EnemyTemplateForm()
         {
             InitializeComponent();
             events = new CoreCommonEvent(fileLocation: Properties.Settings.Default.SpotTemplateFolder + "\\Template Editor\\EnemyTemplate", start: 37, row: 38, tree: Tree, controls: Controls);
 
+            //Here is a list of names for what this editor is primarily editing.
             Tree.Nodes.Add("Goblin");
             Tree.Nodes.Add("Slime");
             Tree.Nodes.Add("Enemy Mage M");
@@ -29,6 +33,22 @@ namespace Crystal_Editor
             Tree.Nodes.Add("Ultimate God of Destruction");
             Tree.Nodes.Add("Ultimate God of Destruction (Post-game)");
 
+            //Here is a list of names for a dropdown menu (so people can edit some things by selecting names from a list, instead of using numbers).
+            Arteboxes.Add(comboBoxClass);
+            string[] PlayerArteUserList = new[] {
+            "00 None / from another arte",
+            "01 Yuri",
+            "02 Estelle",
+            "03 Karol",
+            //"04 Rita",
+            "05 Raven",
+            "06 Judith",
+            "07 Repede",
+            "08 Flynn",
+            "09 Patty"
+            };
+            comboBoxClass.Items.AddRange(PlayerArteUserList);
+
             TreeNodeCollection nodeCollect = Tree.Nodes;
             Tree.SelectedNode = nodeCollect[0];
         }
@@ -36,12 +56,58 @@ namespace Crystal_Editor
         private void Tree_AfterSelect(object sender, TreeViewEventArgs e)
         {
             Editor(MoveRequest.Load);
+
+            
+
+            string VarByte = BitConverter.ToUInt32(events.data_array, 37 + (Tree.SelectedNode.Index * 38) + 1).ToString("D"); //We put the hex into this string, and if the string is read, we make the text appear in the combo box.
+            nameOfFlags(0);
+
+            void nameOfFlags(int box_id)
+            {
+                //skillTree.Nodes.Add("Function Is Working!" + VarcomboBoxSkillFlag);
+                //Arteboxes[box_id].SelectedIndex = Arteboxes[box_id].FindStringExact("Unknown Flag");
+                //if (VarSkillFlag == "0") { Arteboxes[box_id].SelectedIndex = Arteboxes[box_id].FindStringExact("00 None / from another arte"); }
+                //if (VarSkillFlag == "1") { Arteboxes[box_id].SelectedIndex = Arteboxes[box_id].FindStringExact("01 Yuri"); }
+                Arteboxes[box_id].SelectedIndex = -1;
+                comboBoxClass.Text = "Unknown Flag TestDummy";
+                if (VarByte == "0") { Arteboxes[box_id].SelectedIndex = 0; }
+                if (VarByte == "1") { Arteboxes[box_id].SelectedIndex = 1; }
+                if (VarByte == "2") { Arteboxes[box_id].SelectedIndex = 2; }
+                if (VarByte == "3") { Arteboxes[box_id].SelectedIndex = 3; }
+                if (VarByte == "4") { Arteboxes[box_id].SelectedIndex = 4; }
+                //if (VarByte == "5") { Arteboxes[box_id].SelectedIndex = 5; }
+                if (VarByte == "5") { Arteboxes[box_id].SelectedValue = Arteboxes[0].Items.First(_ => _.Contains("05")); ; }
+                if (VarByte == "6") { Arteboxes[box_id].SelectedIndex = 6; }
+                if (VarByte == "7") { Arteboxes[box_id].SelectedIndex = 7; }
+                if (VarByte == "8") { Arteboxes[box_id].SelectedIndex = 8; }
+                //if (VarByte == "9") { Arteboxes[box_id].SelectedIndex = 9; }
+
+
+
+            }
+            UnitClass = VarByte;
         }
         private void Button6_Click(object sender, EventArgs e) //Load Button
         {
             Editor(MoveRequest.Load);
         }
         private void Button5_Click(object sender, EventArgs e) //Save Button
+        {
+            Editor(MoveRequest.Save);
+
+            if (comboBoxClass.Text == "00 None / from another arte") { UnitClass = "0"; }
+            if (comboBoxClass.Text == "01 Yuri") { UnitClass = "1"; }
+            if (comboBoxClass.Text == "02 Estelle") { UnitClass = "2"; }
+            if (comboBoxClass.Text == "03 Karol") { UnitClass = "3"; }
+            //if (comboBoxClass.Text == "04 Rita") { UnitClass = "4"; }
+            if (comboBoxClass.Text == "05 Raven") { UnitClass = "5"; }
+            if (comboBoxClass.Text == "06 Judith") { UnitClass = "6"; }
+            if (comboBoxClass.Text == "07 Repede") { UnitClass = "7"; }
+            if (comboBoxClass.Text == "08 Flynn") { UnitClass = "8"; }
+            if (comboBoxClass.Text == "09 Patty") { UnitClass = "9"; }
+            UInt32.TryParse(UnitClass, out uint value32); { TitleForm.ByteWriter(value32, events.data_array, 37 + (Tree.SelectedNode.Index * 38) + 1); }
+        }
+        private void SaveAllButton_Click(object sender, EventArgs e) //Save ALL Button
         {
             Editor(MoveRequest.Save);
         }
@@ -96,5 +162,7 @@ namespace Crystal_Editor
         {
 
         }
+
+        
     }
 }
